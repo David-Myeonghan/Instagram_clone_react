@@ -7,6 +7,7 @@ import { db, auth } from "./firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { Button, Input } from "@material-ui/core";
+import ImageUpload from "./ImageUpload";
 
 function getModalStyle() {
 	const top = 50;
@@ -92,6 +93,7 @@ function App() {
 
 	return (
 		<div className="app">
+			<ImageUpload />;
 			<Modal open={open} onClose={() => setOpen(false)}>
 				<div style={modalStyle} className={classes.paper}>
 					<form className="app__signup">
@@ -116,7 +118,6 @@ function App() {
 					</form>
 				</div>
 			</Modal>
-
 			<Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
 				<div style={modalStyle} className={classes.paper}>
 					<form className="app__signup">
@@ -140,7 +141,6 @@ function App() {
 					</form>
 				</div>
 			</Modal>
-
 			<div className="app__header">
 				<img
 					className="app__headerImage"
@@ -148,7 +148,6 @@ function App() {
 					alt=""
 				></img>
 			</div>
-
 			{user ? (
 				<Button onClick={() => auth.signOut()}>Logout</Button>
 			) : (
@@ -157,13 +156,10 @@ function App() {
 					<Button onClick={() => setOpen(true)}>Sign Up</Button>
 				</div>
 			)}
-
 			<h1>Instagram clone</h1>
-
 			{posts.map(({ id, post }) => (
 				<Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
 			))}
-
 			{/* <Post
 				username="myDav12"
 				caption="ReactJS"
