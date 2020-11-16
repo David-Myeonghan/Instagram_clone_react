@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import Post from "./Post";
-import firebase from "firebase/app";
-import "firebase/firestore";
+// import firebase from "firebase/app";
 import { db, auth } from "./firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
@@ -59,15 +58,17 @@ function App() {
 	}, [user, username]);
 
 	useEffect(() => {
-		db.collection("posts").onSnapshot((snapshot) => {
-			//every time a new post is added, this code fires.
-			setPosts(
-				snapshot.docs.map((doc) => ({
-					id: doc.id,
-					post: doc.data(),
-				}))
-			);
-		});
+		db.collection("posts")
+			.orderBy("timestamp", "desc")
+			.onSnapshot((snapshot) => {
+				//every time a new post is added, this code fires.
+				setPosts(
+					snapshot.docs.map((doc) => ({
+						id: doc.id,
+						post: doc.data(),
+					}))
+				);
+			});
 	}, []);
 
 	const signUp = (event) => {
@@ -93,7 +94,6 @@ function App() {
 
 	return (
 		<div className="app">
-			{user?.displayName ? <ImageUpload username={user.displayName} /> : <h3>You need to login to upload</h3>}
 			<Modal open={open} onClose={() => setOpen(false)}>
 				<div style={modalStyle} className={classes.paper}>
 					<form className="app__signup">
@@ -147,34 +147,21 @@ function App() {
 					src="https://instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
 					alt=""
 				></img>
+				{user ? (
+					<Button onClick={() => auth.signOut()}>Logout</Button>
+				) : (
+					<div className="app__loginContainer">
+						<Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+						<Button onClick={() => setOpen(true)}>Sign Up</Button>
+					</div>
+				)}
 			</div>
-			{user ? (
-				<Button onClick={() => auth.signOut()}>Logout</Button>
-			) : (
-				<div className="app__loginContainer">
-					<Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-					<Button onClick={() => setOpen(true)}>Sign Up</Button>
-				</div>
-			)}
-			<h1>Instagram clone</h1>
+
 			{posts.map(({ id, post }) => (
 				<Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
 			))}
-			{/* <Post
-				username="myDav12"
-				caption="ReactJS"
-				imageUrl="https://images.unsplash.com/photo-1593642533144-3d62aa4783ec?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
-			/>
-			<Post
-				username="Ryu"
-				caption="So lit!"
-				imageUrl="https://images.unsplash.com/photo-1604987293212-5aea39d94ccb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80"
-			/>
-			<Post
-				username="David"
-				caption="DOPE"
-				imageUrl="https://images.unsplash.com/photo-1605041176777-23275b7a1410?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=954&q=80"
-			/> */}
+
+			{user?.displayName ? <ImageUpload username={user.displayName} /> : <h3>You need to login to upload</h3>}
 		</div>
 	);
 }
