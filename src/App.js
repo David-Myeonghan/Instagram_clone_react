@@ -83,6 +83,8 @@ function App() {
 			.catch((error) => alert(error.message));
 
 		setOpen(false);
+		setEmail("");
+		setPassword("");
 	};
 
 	const signIn = (event) => {
@@ -90,6 +92,9 @@ function App() {
 
 		auth.signInWithEmailAndPassword(email, password).catch((error) => alert(error.message));
 		setOpenSignIn(false);
+
+		setEmail("");
+		setPassword("");
 	};
 
 	return (
@@ -157,9 +162,11 @@ function App() {
 				)}
 			</div>
 
-			{posts.map(({ id, post }) => (
-				<Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
-			))}
+			<div className="app__posts">
+				{posts.map(({ id, post }) => (
+					<Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
+				))}
+			</div>
 
 			{user?.displayName ? <ImageUpload username={user.displayName} /> : <h3>You need to login to upload</h3>}
 		</div>
