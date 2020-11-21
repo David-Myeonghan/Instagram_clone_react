@@ -8,6 +8,7 @@ import Modal from "@material-ui/core/Modal";
 import { Button, Input } from "@material-ui/core";
 import ImageUpload from "./ImageUpload";
 import InstagramEmbed from "react-instagram-embed";
+import { Link } from "react-router-dom";
 
 function getModalStyle() {
 	const top = 50;
@@ -148,11 +149,13 @@ function App() {
 				</div>
 			</Modal>
 			<div className="app__header">
-				<img
-					className="app__headerImage"
-					src="https://instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
-					alt=""
-				></img>
+				<a className="app__top" href="#top">
+					<img
+						className="app__headerImage"
+						src="https://instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+						alt=""
+					></img>
+				</a>
 				{user ? (
 					<Button onClick={() => auth.signOut()}>Logout</Button>
 				) : (

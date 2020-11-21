@@ -1,5 +1,6 @@
 * {
 	margin: 0;
+	scroll-behavior: smooth;
 }
 
 .app {
@@ -23,6 +24,7 @@
 	z-index: 1;
 	background-color: white;
 	padding: 20px;
+	padding-bottom: 15px;
 	border-bottom: 1px solid lightgray;
 	object-fit: contain;
 	display: flex;
