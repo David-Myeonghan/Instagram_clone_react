@@ -8,7 +8,8 @@ import Modal from "@material-ui/core/Modal";
 import { Button, Input } from "@material-ui/core";
 import ImageUpload from "./ImageUpload";
 import InstagramEmbed from "react-instagram-embed";
-import { Link } from "react-router-dom";
+import axios from "./axios";
+import Pusher from "pusher-js";
 
 function getModalStyle() {
 	const top = 50;
@@ -46,6 +47,12 @@ function App() {
 
 	const [user, setUser] = useState(null);
 
+	const fetchPosts = async () =>
+		await axios.get("/sync").then((response) => {
+			console.log(response);
+			setPosts(response.data);
+		});
+
 	useEffect(() => {
 		auth.onAuthStateChanged((authUser) => {
 			if (authUser) {
@@ -60,17 +67,31 @@ function App() {
 	}, [user, username]);
 
 	useEffect(() => {
-		db.collection("posts")
-			.orderBy("timestamp", "desc")
-			.onSnapshot((snapshot) => {
-				//every time a new post is added, this code fires.
-				setPosts(
-					snapshot.docs.map((doc) => ({
-						id: doc.id,
-						post: doc.data(),
-					}))
-				);
-			});
+		const pusher = new Pusher("631fb65b0dc2df2b3196", {
+			cluster: "ap4",
+		});
+
+		const channel = pusher.subscribe("posts");
+		channel.bind("inserted", (data) => {
+			console.log("data recieved", data);
+			fetchPosts();
+		});
+	}, []);
+
+	useEffect(() => {
+		// db.collection("posts")
+		// 	.orderBy("timestamp", "desc")
+		// 	.onSnapshot((snapshot) => {
+		// 		//every time a new post is added, this code fires.
+		// 		setPosts(
+		// 			snapshot.docs.map((doc) => ({
+		// 				id: doc.id,
+		// 				post: doc.data(),
+		// 			}))
+		// 		);
+		// 	});
+
+		fetchPosts(); // when using async function.
 	}, []);
 
 	const signUp = (event) => {
@@ -168,14 +189,14 @@ function App() {
 
 			<div className="app__posts">
 				<div className="app__postLeft">
-					{posts.map(({ id, post }) => (
+					{posts.map((post) => (
 						<Post
-							key={id}
-							postId={id}
+							key={post._id}
+							postId={post._id}
 							user={user}
-							username={post.username}
+							username={post.user}
 							caption={post.caption}
-							imageUrl={post.imageUrl}
+							imageUrl={post.image}
 						/>
 					))}
 				</div>

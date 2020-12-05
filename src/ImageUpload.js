@@ -3,11 +3,13 @@ import "./ImageUpload.css";
 import { Button } from "@material-ui/core";
 import firebase from "firebase/app";
 import { storage, db } from "./firebase";
+import axios from "./axios";
 
 function ImageUpload({ username }) {
 	const [progress, setProgress] = useState(0);
 	const [image, setImage] = useState(null);
 	const [caption, setCaption] = useState("");
+	const [url, setUrl] = useState("");
 
 	// to pick just one file.
 	const handleChange = (e) => {
@@ -37,6 +39,14 @@ function ImageUpload({ username }) {
 					.child(image.name)
 					.getDownloadURL()
 					.then((url) => {
+						setUrl(url);
+
+						axios.post("/upload", {
+							caption: caption,
+							user: username,
+							image: url,
+						});
+
 						// post image inside db
 						db.collection("posts").add({
 							timestamp: firebase.firestore.FieldValue.serverTimestamp(),
